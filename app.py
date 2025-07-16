@@ -30,4 +30,5 @@ def calculator():
         except ValueError:
             print("❌ Invalid input format. Use: number operator number")
 
-calculator()
+if __name__ == "__main__":
+    calculator()    
