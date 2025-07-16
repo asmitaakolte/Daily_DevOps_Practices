@@ -1,4 +1,5 @@
 def calculator():
+
     print("Simple Calculator (type 'exit' to quit)\n")
 
     while True:
@@ -21,14 +22,15 @@ def calculator():
                 print(f"= {num1 * num2}")
             elif op == '/':
                 if num2 == 0:
-                    print("❌ Cannot divide by zero")
+                    print("Cannot divide by zero")
                 else:
                     print(f"= {num1 / num2}")
             else:
-                print("❌ Invalid operator")
+                print("Invalid operator")
 
         except ValueError:
-            print("❌ Invalid input format. Use: number operator number")
+            print(" Invalid input format. Use: number operator number")
+
 
 if __name__ == "__main__":
     calculator()    
