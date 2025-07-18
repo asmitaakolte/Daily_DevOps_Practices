@@ -1,20 +1,19 @@
-from app import calculator
+import pytest
+import redis
+from app import app
 
-def test_add(monkeypatch, capsys):
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
 
-    inputs = iter(["2 + 3", "exit"])
-    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
-    
-    calculator()
-    captured = capsys.readouterr()
-    assert "= 5.0" in captured.out
+def test_addition(client):
+    response = client.get('/add?a=2&b=3')
+    assert response.status_code == 200
+    assert response.json['result'] == 5
 
-def test_invalid_input(monkeypatch, capsys):
-
-    inputs = iter(["2++3", "exit"])
-    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
-    
-    calculator()
-    captured = capsys.readouterr()
-    assert "Invalid input format" in captured.out
-
+def test_cache():
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    r.set('test_key', 'test_value')
+    assert r.get('test_key') == b'test_value'

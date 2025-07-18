@@ -1,36 +1,17 @@
-def calculator():
+import redis
+from flask import Flask, request, jsonify
 
-    print("Simple Calculator (type 'exit' to quit)\n")
+app = Flask(__name__)
+r = redis.Redis(host='redis', port=6379, decode_responses=True)
 
-    while True:
-        user_input = input("Enter calculation (e.g. 5 + 3): ")
+@app.route('/add', methods=['POST'])
+def add():
+    data = request.get_json()
+    result = data['a'] + data['b']
+    r.set('last_result', result)
+    return jsonify({'result': result})
 
-        if user_input.lower() == 'exit':
-            print("👋 Exiting calculator.")
-            break
-
-        try:
-            num1, op, num2 = user_input.split()
-            num1 = float(num1)
-            num2 = float(num2)
-
-            if op == '+':
-                print(f"= {num1 + num2}")
-            elif op == '-':
-                print(f"= {num1 - num2}")
-            elif op == '*':
-                print(f"= {num1 * num2}")
-            elif op == '/':
-                if num2 == 0:
-                    print("Cannot divide by zero")
-                else:
-                    print(f"= {num1 / num2}")
-            else:
-                print("Invalid operator")
-
-        except ValueError:
-            print(" Invalid input format. Use: number operator number")
-
-
-if __name__ == "__main__":
-    calculator()    
+@app.route('/last')
+def last():
+    value = r.get('last_result')
+    return jsonify({'last_result': value})
